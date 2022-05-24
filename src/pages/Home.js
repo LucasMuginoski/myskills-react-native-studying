@@ -1,16 +1,30 @@
-import React, { Fragment } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TextInput,
     Platform,
-    TouchableOpacity
 } from 'react-native';
+
+import { Button } from '../components/button';
+import { SkillCard } from '../components/skillCard';
 
 //SafeAreaView usado no IOS para "tirar o efeito do entalhe dos novos iPhones"
 // não export default para exportar mais de 1 elemento
 export function Home() {
+    //princípio da imutabilidade - estado inicial vazio
+    const [newSkill, setNewSkill] = useState('');
+    const [mySkills, setMySkill] = useState([]);
+
+    //funções vem antes do return, handle quando a funcão é disp por uma iteração do usuário
+    function handleAddNewSkill() {
+        //usar o spread operator (...)  - recup estado anterior e adiciona novo elemento no vetor oldState
+        setMySkill(oldState => [...oldState, newSkill]);
+        //setMySkill([...mySkills, newSkill]); -> outra forma de fazer a função
+    }
+
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
@@ -20,16 +34,18 @@ export function Home() {
                 style={styles.input}
                 placeholder="Enter your new skill"
                 placeholderTextColor={"#555"}
+                onChangeText={setNewSkill}
             />
-            <TouchableOpacity
-                style={styles.button}
-                activeOpacity={.7}>
-                <Text style={styles.buttonText}>Add your skill</Text>
-            </TouchableOpacity>
-            <Text style={[styles.title, {marginTop: 20} ]}>
-                My Skill
+            <Button onPress={handleAddNewSkill} />
+            <Text style={[styles.title, { marginVertical: 20 }]}>
+                My Skills:
             </Text>
-
+            {
+                mySkills.map(skill => (
+                    //Usar a key no mesmo nivel de hierarquia que o componente ou seja, primeiro elemento dentro do map
+                    <SkillCard key={skill} skill={skill} />
+                ))
+            }
         </View>
     )
 }
@@ -58,18 +74,5 @@ const styles = StyleSheet.create({
         padding: Platform.IO === 'ios' ? 15 : 10,
         marginTop: 30,
         borderRadius: 7
-    },
-    button: {
-        //padrão flex-box
-        backgroundColor: '#a370f7',
-        padding: 15,
-        borderRadius: 7,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 17,
-        fontWeight: 'bold'
     }
 })
