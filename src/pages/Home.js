@@ -5,6 +5,8 @@ import {
     StyleSheet,
     TextInput,
     Platform,
+    ScrollView,
+    FlatList, //mais performatico para listagens grandes
 } from 'react-native';
 
 import { Button } from '../components/button';
@@ -14,7 +16,8 @@ import { SkillCard } from '../components/skillCard';
 // não export default para exportar mais de 1 elemento
 export function Home() {
     //princípio da imutabilidade - estado inicial vazio
-    const [newSkill, setNewSkill] = useState('');
+    // HOOKS - useNomeDoHook em camel case
+    const [newSkill, setNewSkill] = useState(''); //estado inicial uma string vazia.  Primeira posição é o estado em si, segunda função que atualiza o estado
     const [mySkills, setMySkill] = useState([]);
 
     //funções vem antes do return, handle quando a funcão é disp por uma iteração do usuário
@@ -40,12 +43,15 @@ export function Home() {
             <Text style={[styles.title, { marginVertical: 20 }]}>
                 My Skills:
             </Text>
-            {
-                mySkills.map(skill => (
-                    //Usar a key no mesmo nivel de hierarquia que o componente ou seja, primeiro elemento dentro do map
-                    <SkillCard key={skill} skill={skill} />
-                ))
-            }
+
+            <FlatList
+                data= {mySkills}
+                keyExtractor= {item => item}
+                renderItem= {({ item }) => (
+                    <SkillCard skill={item} />
+                )}    
+            />
+
         </View>
     )
 }
