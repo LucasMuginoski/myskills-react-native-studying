@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TextInput,
     Platform,
-    ScrollView,
+    //ScrollView,
     FlatList, //mais performatico para listagens grandes
 } from 'react-native';
 
@@ -19,6 +19,8 @@ export function Home() {
     // HOOKS - useNomeDoHook em camel case
     const [newSkill, setNewSkill] = useState(''); //estado inicial uma string vazia.  Primeira posição é o estado em si, segunda função que atualiza o estado
     const [mySkills, setMySkill] = useState([]);
+    const [greetings, setGreetings] = useState('');
+
 
     //funções vem antes do return, handle quando a funcão é disp por uma iteração do usuário
     function handleAddNewSkill() {
@@ -27,12 +29,32 @@ export function Home() {
         //setMySkill([...mySkills, newSkill]); -> outra forma de fazer a função
     }
 
+    //useEffect - proximo do return
+    useEffect( ()=> {
+        //função seguida por um array de dependencia
+        //a dependencia vincula o useEffect com um estado por exemplo
+        const currentHour = new Date().getHours();
+        if(currentHour < 12){
+            setGreetings('Good Morning!');
+        }
+        else if(currentHour >= 12 && currentHour < 18){
+            setGreetings("Good Afternoon!");
+        }
+        else{
+            setGreetings("Good Evening!");
+        }
+    }, []);
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
                 Welcome, Lucas!
             </Text>
+
+            <Text style={styles.greetings}>
+                { greetings }
+            </Text>
+
             <TextInput
                 style={styles.input}
                 placeholder="Enter your new skill"
@@ -80,5 +102,8 @@ const styles = StyleSheet.create({
         padding: Platform.IO === 'ios' ? 15 : 10,
         marginTop: 30,
         borderRadius: 7
+    },
+    greetings:{
+        color: '#fff'
     }
 })
