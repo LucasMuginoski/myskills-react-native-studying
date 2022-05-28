@@ -12,21 +12,39 @@ import {
 import { Button } from '../components/button';
 import { SkillCard } from '../components/skillCard';
 
+//criar interface: representação de dados , fazer fora da função
+interface SkillData {
+    id: string;
+    name: string;
+    //date?: Date; //opcional ?:
+}
+
+
+
+
 //SafeAreaView usado no IOS para "tirar o efeito do entalhe dos novos iPhones"
 // não export default para exportar mais de 1 elemento
 export function Home() {
     //princípio da imutabilidade - estado inicial vazio
     // HOOKS - useNomeDoHook em camel case
     const [newSkill, setNewSkill] = useState(''); //estado inicial uma string vazia.  Primeira posição é o estado em si, segunda função que atualiza o estado
-    const [mySkills, setMySkill] = useState([]);
+    const [mySkills, setMySkill] = useState<SkillData[]>([]); //useState é um array que recebe SkillData como dados
     const [greetings, setGreetings] = useState('');
 
 
     //funções vem antes do return, handle quando a funcão é disp por uma iteração do usuário
     function handleAddNewSkill() {
-        //usar o spread operator (...)  - recup estado anterior e adiciona novo elemento no vetor oldState
-        setMySkill(oldState => [...oldState, newSkill]);
-        //setMySkill([...mySkills, newSkill]); -> outra forma de fazer a função
+        const data = {
+            id: String(new Date().getTime()),
+            name: newSkill
+        }
+        setMySkill(oldState => [...oldState, data]);
+    }
+
+    function handleRemoveSkill(id: string){
+        setMySkill(oldState => oldState.filter(
+            skill => skill.id !== id
+        ))
     }
 
     //useEffect - proximo do return
@@ -61,16 +79,22 @@ export function Home() {
                 placeholderTextColor={"#555"}
                 onChangeText={setNewSkill}
             />
-            <Button onPress={handleAddNewSkill} />
+            <Button 
+                title = "Add your new skill!"
+                onPress={handleAddNewSkill} 
+            />
             <Text style={[styles.title, { marginVertical: 20 }]}>
                 My Skills:
             </Text>
 
             <FlatList
                 data= {mySkills}
-                keyExtractor= {item => item}
+                keyExtractor= {item => item.id}
                 renderItem= {({ item }) => (
-                    <SkillCard skill={item} />
+                    <SkillCard 
+                        skill={item.name}
+                        onPress={ () => handleRemoveSkill(item.id)}
+                    />
                 )}    
             />
 
@@ -85,7 +109,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#121015',
-        paddingHorizontal: 20,
         paddingVertical: 70,
         paddingHorizontal: 30
     },
@@ -99,7 +122,7 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 18,
         //definindo padding específicos para cada plataforma (iOS 15 px e Android 10 px)
-        padding: Platform.IO === 'ios' ? 15 : 10,
+        padding: 15,
         marginTop: 30,
         borderRadius: 7
     },
